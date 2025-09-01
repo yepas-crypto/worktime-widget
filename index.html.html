@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>퇴근시간 알리미</title>
+  <style>
+    body { font-family: sans-serif; text-align:center; }
+    #countdown { font-size: 24px; margin: 20px 0; }
+
+    canvas { display:block; margin: 0 auto; }
+
+    .weekbar {
+      display: flex; gap: 4px; justify-content: center; margin-top:20px;
+    }
+    .day {
+      flex:1; height:20px; border-radius:4px;
+    }
+  </style>
+</head>
+<body>
+  <h2>퇴근시간 알리미</h2>
+
+  <!-- 남은 퇴근시간 -->
+  <div id="countdown"></div>
+
+  <!-- 하루 진행도 (원형 그래프) -->
+  <canvas id="dayProgress" width="150" height="150"></canvas>
+
+  <!-- 주간 근무 진행도 -->
+  <div class="weekbar" id="weekbar"></div>
+
+  <script>
+    const workStartHour = 9;   // 출근 시간 (9시)
+    const workEndHour = 18;    // 퇴근 시간 (18시)
+    const workDays = [1,2,3,4,5]; // 월(1)~금(5)
+
+    function updateCountdown() {
+      const now = new Date();
+      const end = new Date();
+      end.setHours(workEndHour,0,0,0);
+
+      let diff = Math.floor((end - now)/60000);
+      let text = "";
+      if (diff > 0) {
+        text = "퇴근까지 " + diff + "분 남음";
+      } else {
+        text = "퇴근!";
+      }
+      document.getElementById("countdown").innerText = text;
+    }
+
+    function drawDayProgress() {
+      const now = new Date();
+      const start = new Date(); start.setHours(workStartHour,0,0,0);
+      const end = new Date(); end.setHours(workEndHour,0,0,0);
+
+      let percent = ((now - start) / (end - start)) * 100;
+      if (percent < 0) percent = 0;
+      if (percent > 100) percent = 100;
+
+      const canvas = document.getElementById("dayProgress");
+      const ctx = canvas.getContext("2d");
+
+      ctx.clearRect(0,0,150,150);
+
+      // 배경 원
+      ctx.beginPath();
+      ctx.arc(75,75,70,0,2*Math.PI);
+      ctx.strokeStyle = "#ddd"; ctx.lineWidth=10; ctx.stroke();
+
+      // 진행 원
+      ctx.beginPath();
+      ctx.arc(75,75,70,-Math.PI/2,(2*Math.PI*percent/100)-Math.PI/2);
+      ctx.strokeStyle="#4caf50"; ctx.lineWidth=10; ctx.stroke();
+
+      // 가운데 % 텍스트
+      ctx.font="16px sans-serif";
+      ctx.fillStyle="#333";
+      ctx.textAlign="center";
+      ctx.textBaseline="middle";
+      ctx.fillText(percent.toFixed(0)+"%",75,75);
+    }
+
+    function drawWeekBar() {
+      const today = new Date().getDay(); // 일(0)~토(6)
+      const container = document.getElementById("weekbar");
+      container.innerHTML = "";
+      for (let i=1; i<=5; i++) {
+        const div = document.createElement("div");
+        div.className="day";
+        div.style.background = (i <= today && today<=5) ? "#4caf50" : "#ddd";
+        container.appendChild(div);
+      }
+    }
+
+    function refreshAll() {
+      updateCountdown();
+      drawDayProgress();
+      drawWeekBar();
+    }
+
+    refreshAll();
+    setInterval(refreshAll, 60000); // 1분마다 업데이트
+  </script>
+</body>
+</html>
