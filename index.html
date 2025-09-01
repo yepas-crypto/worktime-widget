@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>퇴근시간 알리미</title>
+  <title>송예진은 이만 집에 가오..</title>
   <style>
     body { font-family: sans-serif; text-align:center; }
     #countdown { font-size: 24px; margin: 20px 0; }
@@ -18,7 +18,7 @@
   </style>
 </head>
 <body>
-  <h2>퇴근시간 알리미</h2>
+  <h2>송예진은 이만 집에 가오..</h2>
 
   <!-- 남은 퇴근시간 -->
   <div id="countdown"></div>
@@ -39,7 +39,7 @@
       const end = new Date();
       end.setHours(workEndHour,0,0,0);
 
-      let diff = Math.floor((end - now)/60000);
+      let diff = Math.floor((end - now)/60000+1);
       let text = "";
       if (diff > 0) {
         text = "퇴근까지 " + diff + "분 남음";
@@ -104,3 +104,4 @@
   </script>
 </body>
 </html>
+
